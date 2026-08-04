@@ -1,0 +1,56 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.python-version
+.venv/
+venv/
+
+# Testing and quality
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project-generated data
+data/bronze/*
+data/silver/*
+data/gold/*
+
+# Preserve directory structure
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# Model artifacts
+models/artifacts/*
+!models/artifacts/.gitkeep
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# macOS and editors
+.DS_Store
+.vscode/
+.idea/
+
+# Build output
+build/
+dist/
+*.egg-info/

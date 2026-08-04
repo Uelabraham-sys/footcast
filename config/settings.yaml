@@ -1,0 +1,24 @@
+project:
+  name: footcast
+  environment: development
+  timezone: UTC
+
+football:
+  competition_code: PL
+  competition_name: Premier League
+  country: England
+
+api:
+  base_url: https://api.football-data.org/v4
+  timeout_seconds: 30
+  maximum_retries: 3
+  retry_wait_seconds: 5
+
+data:
+  bronze_directory: data/bronze
+  silver_directory: data/silver
+  gold_directory: data/gold
+
+logging:
+  level: INFO
+  file: logs/footcast.log
