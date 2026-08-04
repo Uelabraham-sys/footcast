@@ -14,6 +14,13 @@ api:
   maximum_retries: 3
   retry_wait_seconds: 5
 
+historical_data:
+  provider: football-data.co.uk
+  base_url: https://www.football-data.co.uk/mmz4281
+  division_code: E0
+  start_season: 2019
+  end_season: 2025
+
 data:
   bronze_directory: data/bronze
   silver_directory: data/silver

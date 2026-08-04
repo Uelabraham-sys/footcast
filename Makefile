@@ -1,4 +1,4 @@
-.PHONY: install format lint typecheck test check tree
+.PHONY: install format lint typecheck test check tree ingest-historical
 
 install:
 	uv sync --all-groups
@@ -16,6 +16,11 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+ingest-historical:
+	uv run python -m footcast.ingestion.historical \
+		--start-year 2019 \
+		--end-year 2025
 
 tree:
 	find . -maxdepth 4 \
