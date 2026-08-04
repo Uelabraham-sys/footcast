@@ -22,6 +22,7 @@ from tenacity import (
 
 from footcast.config import get_settings
 from footcast.ingestion.validation import validate_historical_matches
+from footcast.logging_config import configure_logging
 
 LOGGER = logging.getLogger(__name__)
 
@@ -447,12 +448,8 @@ def run(
     ),
 ) -> None:
     """Download and process a range of Premier League seasons."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    )
-
     settings = get_settings()
+    configure_logging(settings.footcast_log_level)
 
     entries = ingest_historical_range(
         start_year=start_year,

@@ -1,4 +1,5 @@
-.PHONY: install format lint typecheck test check tree ingest-historical
+.PHONY: install format lint typecheck test check tree \
+	ingest-historical ingest-current ingest-all audit-bronze
 
 install:
 	uv sync --all-groups
@@ -21,6 +22,13 @@ ingest-historical:
 	uv run python -m footcast.ingestion.historical \
 		--start-year 2019 \
 		--end-year 2025
+ingest-current:
+	uv run python -m footcast.ingestion.current
+
+ingest-all: ingest-historical ingest-current audit-bronze
+
+audit-bronze:
+	uv run python -m footcast.ingestion.audit
 
 tree:
 	find . -maxdepth 4 \

@@ -47,3 +47,23 @@ Historical data       Current football API
       Gold features and predictions
                   ▼
        Models and dashboard
+## Current implementation status
+
+### Completed
+
+- project structure and environment configuration;
+- historical Premier League CSV ingestion;
+- current fixtures, results and standings API ingestion;
+- raw CSV and JSON preservation;
+- Bronze Parquet datasets;
+- ingestion manifests and SHA-256 checksums;
+- automated validation and Bronze audit reporting;
+- unit tests, static type checking and code formatting.
+
+### Next
+
+- canonical team identity mapping;
+- historical and current match deduplication;
+- Silver match table;
+- leakage-safe rolling form features;
+- chronological Elo ratings.
