@@ -2,6 +2,7 @@
 	ingest-historical ingest-current ingest-all audit-bronze \
 	build-silver build-form-features build-elo-features build-data
 	build-model-dataset audit-model-dataset inspect-model-data evaluate-baselines
+	train-logistic
 
 install:
 	uv sync --all-groups
@@ -19,6 +20,9 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+train-logistic:
+	uv run python -m footcast.modelling.train_logistic
 
 evaluate-baselines:
 	uv run python -m footcast.modelling.run_baselines
