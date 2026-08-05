@@ -1,6 +1,7 @@
 .PHONY: install format lint typecheck test check tree \
 	ingest-historical ingest-current ingest-all audit-bronze \
 	build-silver build-form-features build-elo-features build-data
+	build-model-dataset audit-model-dataset
 
 install:
 	uv sync --all-groups
@@ -19,10 +20,40 @@ test:
 
 check: format lint typecheck test
 
+build-model-dataset:
+	uv run python -m footcast.features.model_dataset \
+		--validation-season 2023/24 \
+		--test-season 2024/25
+
+audit-model-dataset:
+	uv run python - <<'PY'
+	import polars as pl
+	from footcast.features.model_validation import validate_model_dataset
+
+	df = pl.read_parquet("data/gold/model_dataset.parquet")
+	validate_model_dataset(df)
+
+	print("MODEL DATASET AUDIT")
+	print("=" * 40)
+	print("Rows:", df.height)
+	print("Columns:", df.width)
+	print("Unique matches:", df["match_key"].n_unique())
+	print()
+	print(df.group_by("split").len().sort("split"))
+	print()
+	print(
+	    df.filter(pl.col("target").is_not_null())
+	    .group_by(["split", "target"])
+	    .len()
+	    .sort(["split", "target"])
+	)
+	PY
+
 build-elo-features:
 	uv run python -m footcast.features.build_elo_features
 
-build-data: build-silver build-form-features build-elo-features
+build-data: build-silver build-form-features \
+	build-elo-features build-model-dataset
 
 build-form-features:
 	uv run python -m footcast.features.build_features

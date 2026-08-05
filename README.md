@@ -67,3 +67,26 @@ Historical data       Current football API
 - Silver match table;
 - leakage-safe rolling form features;
 - chronological Elo ratings.
+
+## Modelling dataset
+
+FootCast produces a leakage-safe model table by combining:
+
+- previous-five-match team form;
+- recent goals scored and conceded;
+- wins, draws and losses;
+- rest-day differences;
+- chronological pre-match Elo ratings;
+- home-advantage-adjusted Elo expectations;
+- cold-start indicators.
+
+The prediction target is:
+
+| Target | Outcome |
+|---:|---|
+| 0 | Away win |
+| 1 | Draw |
+| 2 | Home win |
+
+Training, validation and test sets are separated by complete seasons.
+No random train/test split is used.
