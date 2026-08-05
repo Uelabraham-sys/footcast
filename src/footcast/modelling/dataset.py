@@ -165,6 +165,8 @@ def build_model_split(
             "away_team_id",
             "away_team",
             "full_time_result",
+            "home_expected_score",
+            "away_expected_score",
             "target",
             "split",
         )
