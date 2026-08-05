@@ -54,3 +54,11 @@ mlartifacts/
 build/
 dist/
 *.egg-info/
+
+artifacts/models/*
+artifacts/predictions/*
+artifacts/reports/*
+
+!artifacts/models/.gitkeep
+!artifacts/predictions/.gitkeep
+!artifacts/reports/.gitkeep

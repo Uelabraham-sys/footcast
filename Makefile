@@ -1,7 +1,7 @@
 .PHONY: install format lint typecheck test check tree \
 	ingest-historical ingest-current ingest-all audit-bronze \
 	build-silver build-form-features build-elo-features build-data
-	build-model-dataset audit-model-dataset
+	build-model-dataset audit-model-dataset inspect-model-data
 
 install:
 	uv sync --all-groups
@@ -19,6 +19,9 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+inspect-model-data:
+	uv run python -c 'from pathlib import Path; from footcast.modelling.dataset import build_model_datasets, load_model_dataset; df = load_model_dataset(Path("data/gold/model_dataset.parquet")); ds = build_model_datasets(df); print("train", ds.train.features.shape); print("validation", ds.validation.features.shape); print("test", ds.test.features.shape)'
 
 build-model-dataset:
 	uv run python -m footcast.features.model_dataset \
