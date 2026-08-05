@@ -1,9 +1,20 @@
-.PHONY: install format lint typecheck test check tree \
-	ingest-historical ingest-current ingest-all audit-bronze \
-	build-silver build-form-features build-elo-features build-data
-	build-model-dataset audit-model-dataset inspect-model-data evaluate-baselines
-	train-logistic train-hgb compare-models day-3 backtest-models day-4 calibration-report
-	train-ensemble compare-day-4
+.PHONY: \
+	check \
+	lint \
+	format \
+	typecheck \
+	test \
+	evaluate-baselines \
+	train-logistic \
+	train-hgb \
+	train-ensemble \
+	compare-day-4 \
+	backtest-models \
+	calibration-report \
+	fit-production \
+	predict-future \
+	production \
+	day-4
 
 install:
 	uv sync --all-groups
@@ -22,6 +33,14 @@ test:
 
 check: format lint typecheck test
 
+fit-production: train-ensemble
+	uv run python -m footcast.prediction.fit_production
+
+predict-future:
+	uv run python -m footcast.prediction.predict
+
+production: fit-production
+
 train-ensemble: train-logistic train-hgb
 	uv run python -m footcast.modelling.train_ensemble
 
@@ -31,7 +50,12 @@ compare-day-4:
 calibration-report:
 	uv run python -m footcast.modelling.run_calibration_diagnostics
 
-day-4: backtest-models calibration-report train-ensemble compare-day-4
+day-4: \
+	backtest-models \
+	calibration-report \
+	train-ensemble \
+	compare-day-4 \
+	fit-production
 
 backtest-models:
 	uv run python -m footcast.modelling.run_backtests
