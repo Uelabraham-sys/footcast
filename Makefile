@@ -2,7 +2,7 @@
 	ingest-historical ingest-current ingest-all audit-bronze \
 	build-silver build-form-features build-elo-features build-data
 	build-model-dataset audit-model-dataset inspect-model-data evaluate-baselines
-	train-logistic train-hgb compare-models day-3 backtest-models day-4
+	train-logistic train-hgb compare-models day-3 backtest-models day-4 calibration-report
 
 install:
 	uv sync --all-groups
@@ -21,7 +21,10 @@ test:
 
 check: format lint typecheck test
 
-day-4: backtest-models
+calibration-report:
+	uv run python -m footcast.modelling.run_calibration_diagnostics
+
+day-4: backtest-models calibration-report
 
 backtest-models:
 	uv run python -m footcast.modelling.run_backtests
