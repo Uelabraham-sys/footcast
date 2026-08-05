@@ -34,6 +34,12 @@ from footcast.modelling.gradient_boosting import (
     ordered_predict_proba,
     validation_record,
 )
+from footcast.modelling.logistic import (
+    fit_logistic_pipeline,
+)
+from footcast.modelling.logistic import (
+    ordered_predict_proba as logistic_predict_proba,
+)
 from footcast.modelling.metrics import (
     ClassificationMetrics,
     evaluate_probabilities,
@@ -44,6 +50,7 @@ DEFAULT_MODEL_DIRECTORY: Final[Path] = Path("artifacts/models")
 DEFAULT_REPORT_DIRECTORY: Final[Path] = Path("artifacts/reports")
 DEFAULT_PREDICTION_DIRECTORY: Final[Path] = Path("artifacts/predictions")
 DEFAULT_TUNING_FRACTION: Final[float] = 0.60
+DEFAULT_ENSEMBLE_LOGISTIC_C: Final[float] = 0.1
 
 app = typer.Typer(help="Train and calibrate histogram gradient boosting.")
 
@@ -337,6 +344,22 @@ def train_and_evaluate_hgb(
         datasets.validation,
         tuning_fraction=tuning_fraction,
     )
+    logistic_model = fit_logistic_pipeline(
+        features=datasets.train.features,
+        target=datasets.train.target,
+        regularisation_strength=DEFAULT_ENSEMBLE_LOGISTIC_C,
+        class_weight=None,
+    )
+
+    logistic_calibration_probabilities = logistic_predict_proba(
+        logistic_model,
+        calibration.features,
+    )
+
+    logistic_calibration_predictions = create_prediction_frame(
+        calibration.metadata,
+        logistic_calibration_probabilities,
+    )
 
     selected_parameters, selection_results = select_hgb_parameters(
         datasets=datasets,
@@ -426,6 +449,7 @@ def train_and_evaluate_hgb(
         "hgb_validation_tuning.parquet": (tuning_predictions),
         "hgb_calibration_uncalibrated.parquet": (calibration_predictions_uncalibrated),
         "hgb_calibration.parquet": (calibration_predictions_calibrated),
+        "logistic_calibration.parquet": (logistic_calibration_predictions),
         "hgb_test.parquet": (test_predictions_uncalibrated),
         "hgb_calibrated_test.parquet": (test_predictions_calibrated),
     }

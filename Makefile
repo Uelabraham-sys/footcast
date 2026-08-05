@@ -3,6 +3,7 @@
 	build-silver build-form-features build-elo-features build-data
 	build-model-dataset audit-model-dataset inspect-model-data evaluate-baselines
 	train-logistic train-hgb compare-models day-3 backtest-models day-4 calibration-report
+	train-ensemble compare-day-4
 
 install:
 	uv sync --all-groups
@@ -21,10 +22,16 @@ test:
 
 check: format lint typecheck test
 
+train-ensemble: train-logistic train-hgb
+	uv run python -m footcast.modelling.train_ensemble
+
+compare-day-4:
+	uv run python -m footcast.modelling.day_4_comparison
+
 calibration-report:
 	uv run python -m footcast.modelling.run_calibration_diagnostics
 
-day-4: backtest-models calibration-report
+day-4: backtest-models calibration-report train-ensemble compare-day-4
 
 backtest-models:
 	uv run python -m footcast.modelling.run_backtests

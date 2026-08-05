@@ -202,6 +202,7 @@ def run_calibration_diagnostics(
         "aggregate_summary": (aggregate_summary.to_dicts()),
         "class_summary": (class_summary.to_dicts()),
         "confidence_summary": (confidence_summary.to_dicts()),
+        "probability_ensemble": ("ensemble_test.parquet"),
     }
 
     (report_directory / "calibration_report.json").write_text(
