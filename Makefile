@@ -2,7 +2,7 @@
 	ingest-historical ingest-current ingest-all audit-bronze \
 	build-silver build-form-features build-elo-features build-data
 	build-model-dataset audit-model-dataset inspect-model-data evaluate-baselines
-	train-logistic train-hgb compare-models day-3
+	train-logistic train-hgb compare-models day-3 backtest-models day-4
 
 install:
 	uv sync --all-groups
@@ -20,6 +20,11 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+day-4: backtest-models
+
+backtest-models:
+	uv run python -m footcast.modelling.run_backtests
 
 train-hgb:
 	uv run python -m footcast.modelling.train_gradient_boosting
