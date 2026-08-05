@@ -1,5 +1,6 @@
 .PHONY: install format lint typecheck test check tree \
-	ingest-historical ingest-current ingest-all audit-bronze
+	ingest-historical ingest-current ingest-all audit-bronze \
+	build-silver
 
 install:
 	uv sync --all-groups
@@ -17,6 +18,9 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+build-silver:
+	uv run python -m footcast.processing.clean_matches
 
 ingest-historical:
 	uv run python -m footcast.ingestion.historical \
