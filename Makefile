@@ -1,6 +1,6 @@
 .PHONY: install format lint typecheck test check tree \
 	ingest-historical ingest-current ingest-all audit-bronze \
-	build-silver build-form-features build-data
+	build-silver build-form-features build-elo-features build-data
 
 install:
 	uv sync --all-groups
@@ -18,6 +18,11 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+build-elo-features:
+	uv run python -m footcast.features.build_elo_features
+
+build-data: build-silver build-form-features build-elo-features
 
 build-form-features:
 	uv run python -m footcast.features.build_features
