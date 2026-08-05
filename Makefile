@@ -1,6 +1,6 @@
 .PHONY: install format lint typecheck test check tree \
 	ingest-historical ingest-current ingest-all audit-bronze \
-	build-silver
+	build-silver build-form-features build-data
 
 install:
 	uv sync --all-groups
@@ -19,6 +19,9 @@ test:
 
 check: format lint typecheck test
 
+build-form-features:
+	uv run python -m footcast.features.build_features
+
 build-silver:
 	uv run python -m footcast.processing.clean_matches
 
@@ -33,6 +36,8 @@ ingest-all: ingest-historical ingest-current audit-bronze
 
 audit-bronze:
 	uv run python -m footcast.ingestion.audit
+
+build-data: build-silver build-form-features
 
 tree:
 	find . -maxdepth 4 \
