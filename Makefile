@@ -20,7 +20,17 @@
 	pipeline-models\
 	pipeline-production\
 	ci\
-	validate-artifacts
+	validate-artifacts\
+	docker-build \
+	docker-build-dev \
+	docker-health \
+	docker-quality \
+	docker-test \
+	docker-models \
+	docker-fit-production \
+	docker-predict \
+	docker-validate \
+	docker-check
 	
 
 install:
@@ -39,6 +49,59 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+docker-build:
+	docker build \
+		--target runtime \
+		--tag footcast:local \
+		.
+
+docker-build-dev:
+	docker build \
+		--target development \
+		--tag footcast:development \
+		.
+
+docker-health: docker-build
+	docker run \
+		--rm \
+		footcast:local \
+		python scripts/container_healthcheck.py
+
+docker-quality:
+	docker compose run \
+		--rm \
+		quality
+
+docker-test:
+	docker compose run \
+		--rm \
+		test
+
+docker-models:
+	docker compose run \
+		--rm \
+		pipeline-models
+
+docker-fit-production:
+	docker compose run \
+		--rm \
+		fit-production
+
+docker-predict:
+	docker compose run \
+		--rm \
+		predict
+
+docker-validate:
+	docker compose run \
+		--rm \
+		validate-artifacts
+
+docker-check: \
+	docker-quality \
+	docker-test \
+	docker-health
 
 production-check: fit-production validate-artifacts
 

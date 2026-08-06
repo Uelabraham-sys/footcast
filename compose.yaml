@@ -1,0 +1,99 @@
+name: footcast
+
+x-footcast-common: &footcast-common
+  image: footcast:local
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: runtime
+  working_dir: /app
+  user: "10001:10001"
+  init: true
+  environment:
+    PYTHONUNBUFFERED: "1"
+    FOOTCAST_GIT_COMMIT: "${FOOTCAST_GIT_COMMIT:-unknown}"
+  volumes:
+    - ./data:/app/data
+    - ./artifacts:/app/artifacts
+
+services:
+  health:
+    <<: *footcast-common
+    command:
+      - python
+      - scripts/container_healthcheck.py
+
+  predict:
+    <<: *footcast-common
+    command:
+      - python
+      - -m
+      - footcast.prediction.predict
+
+  fit-production:
+    <<: *footcast-common
+    command:
+      - python
+      - -m
+      - footcast.prediction.fit_production
+
+  pipeline-models:
+    <<: *footcast-common
+    command:
+      - python
+      - -m
+      - footcast.pipelines.run_pipeline
+      - --pipeline
+      - models
+
+  pipeline-production:
+    <<: *footcast-common
+    command:
+      - python
+      - -m
+      - footcast.pipelines.run_pipeline
+      - --pipeline
+      - production
+
+  validate-artifacts:
+    <<: *footcast-common
+    command:
+      - python
+      - scripts/validate_artifacts.py
+
+  test:
+    image: footcast:development
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    working_dir: /app
+    user: "10001:10001"
+    init: true
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./artifacts:/app/artifacts
+    command:
+      - pytest
+      - --cov=src/footcast
+      - --cov-branch
+      - --cov-report=term-missing
+      - --cov-fail-under=72
+
+  quality:
+    image: footcast:development
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    working_dir: /app
+    user: "10001:10001"
+    init: true
+    command:
+      - sh
+      - -c
+      - >-
+        ruff format --check .
+        && ruff check .
+        && mypy src
