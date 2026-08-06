@@ -1,0 +1,68 @@
+name: Integration pipeline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    name: Model pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --locked --all-groups
+
+      - name: Prepare integration dataset
+        run: |
+          mkdir -p data/gold
+          cp \
+            tests/fixtures/model_dataset.parquet \
+            data/gold/model_dataset.parquet
+
+      - name: Run model pipeline
+        run: |
+          uv run python \
+            -m footcast.pipelines.run_pipeline \
+            --pipeline models
+      - name: Fit production model
+        run: |
+          uv run python \
+            -m footcast.prediction.fit_production
+
+      - name: Validate production artifacts
+        run: |
+          uv run python \
+            scripts/validate_artifacts.py
+            
+      - name: Upload run manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-run-manifest
+          path: artifacts/runs
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload model reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelling-reports
+          path: artifacts/reports
+          if-no-files-found: warn
+          retention-days: 14

@@ -18,7 +18,10 @@
 	pipeline\
 	pipeline-data\
 	pipeline-models\
-	pipeline-production
+	pipeline-production\
+	ci\
+	validate-artifacts
+	
 
 install:
 	uv sync --all-groups
@@ -36,6 +39,22 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+production-check: fit-production validate-artifacts
+
+validate-artifacts:
+	uv run python scripts/validate_artifacts.py
+
+ci:
+	uv run ruff format --check .
+	uv run ruff check .
+	uv run mypy src
+	uv run pytest \
+		--cov=src/footcast \
+		--cov-report=term-missing \
+		--cov-report=xml:artifacts/coverage/coverage.xml \
+		--cov-report=html:artifacts/coverage/html \
+		--cov-fail-under=72
 
 pipeline:
 	uv run python -m footcast.pipelines.run_pipeline --pipeline full
