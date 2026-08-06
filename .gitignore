@@ -55,6 +55,15 @@ build/
 dist/
 *.egg-info/
 
+artifacts/coverage/
+artifacts/test-results/
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
 artifacts/models/*
 artifacts/predictions/*
 artifacts/reports/*
@@ -64,3 +73,4 @@ artifacts/reports/*
 !artifacts/reports/.gitkeep
 
 artifacts/runs/
+
