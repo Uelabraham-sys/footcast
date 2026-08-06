@@ -80,3 +80,11 @@ addopts = [
 python_version = "3.12"
 strict = true
 files = ["src"]
+
+[[tool.mypy.overrides]]
+module = "joblib"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "sklearn.frozen"
+ignore_missing_imports = true

@@ -14,7 +14,11 @@
 	fit-production \
 	predict-future \
 	production \
-	day-4
+	day-4\
+	pipeline\
+	pipeline-data\
+	pipeline-models\
+	pipeline-production
 
 install:
 	uv sync --all-groups
@@ -32,6 +36,18 @@ test:
 	uv run pytest --cov=src/footcast --cov-report=term-missing
 
 check: format lint typecheck test
+
+pipeline:
+	uv run python -m footcast.pipelines.run_pipeline --pipeline full
+
+pipeline-data:
+	uv run python -m footcast.pipelines.run_pipeline --pipeline data
+
+pipeline-models:
+	uv run python -m footcast.pipelines.run_pipeline --pipeline models
+
+pipeline-production:
+	uv run python -m footcast.pipelines.run_pipeline --pipeline production
 
 fit-production: train-ensemble
 	uv run python -m footcast.prediction.fit_production
